@@ -83,8 +83,9 @@ def process_axis(opt, vals):
 
 def axis_opt_name_find(name):
     for option in axis_options:
-        if option.label==name:
+        if option.label.lower()==name.lower():
             return option
+    print(f"could not find parameter option {name.lower()}") #should I have a lower() here?
     return None
 
 def apply_field(field):
@@ -119,7 +120,13 @@ def apply_multitool(p, x, xs):
     for attr in attributes:
         field, datum = attr.split(": ")
         fields.append(field)
-        data.append(datum)
+        option = axis_opt_name_find(field)
+        if option.type == int:
+            data.append(int(datum))
+        elif option.type == float:
+            data.append(float(datum))
+        else:
+            data.append(datum)
     for ind in range(len(data)):
         datalist=[]
         for x in xs: #parse xs to get local xs
@@ -144,10 +151,10 @@ def parse_multitool(parse_input):
     import itertools
     data=[]
     fields=[]
-    #parse the typed input
+    #parse the typed input (this is the main parser that gets all the values)
     splitinput = parse_input.split(" | ")
     for param in splitinput:
-        param=param[1:-1]
+        #param=param[1:-1]
         field, datapiece = param.split(": ")
         fields.append(field)
         data.append(datapiece)
